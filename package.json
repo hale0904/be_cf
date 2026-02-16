@@ -1,0 +1,41 @@
+{
+  "name": "be-cf",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/hale0904/be_cf#readme",
+  "bugs": {
+    "url": "https://github.com/hale0904/be_cf/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hale0904/be_cf.git"
+  },
+  "license": "ISC",
+  "author": "hale",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.1.5",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.8.1"
+  }
+}
