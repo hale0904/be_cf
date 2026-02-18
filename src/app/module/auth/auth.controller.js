@@ -1,4 +1,4 @@
-const authService = require('./admin-auth.service');
+const authService = require('./auth.service');
 
 // Handler register
 exports.registerAdmin = async (req, res) => {

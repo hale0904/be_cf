@@ -1,4 +1,4 @@
-const Staff = require('../../../models/staff.model');
+const Staff = require('../../models/staff.model');
 
 const STATUS_HR = {
   0: 'Tuyển dụng',

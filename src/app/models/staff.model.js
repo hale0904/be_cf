@@ -81,6 +81,24 @@ const staffSchema = new mongoose.Schema(
       type: String,
       default: 'Tuyển dụng',
     },
+    permissions: {
+      features: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Feature',
+        },
+      ],
+      menus: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'MenuData',
+        },
+      ],
+      canEdit: {
+        type: Boolean,
+        default: false, // có được sửa không
+      },
+    },
   },
   { timestamps: true }
 );

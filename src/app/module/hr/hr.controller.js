@@ -1,4 +1,4 @@
-const hrService = require('./admin-hr.service');
+const hrService = require('./hr.service');
 
 // Get list parking map with filter and search
 exports.getListHr = async (req, res) => {
