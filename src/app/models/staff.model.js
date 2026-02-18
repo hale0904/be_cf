@@ -7,6 +7,7 @@ const staffSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
+      default: '',
     },
     email: {
       type: String,
@@ -14,23 +15,71 @@ const staffSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      default: '',
     },
     userName: {
       type: String,
       trim: true,
       required: true,
+      default: '',
     },
     password: {
       type: String,
       required: true,
+      default: '',
     },
-    role: {
+    dateOfBirth: {
+      type: Date,
+      required: true,
+      default: null,
+    },
+    loactionName: {
       type: String,
-      default: 'staff',
+      trim: true,
+      required: true,
+      default: '',
+    },
+    roleStaff: {
+      type: Number,
+      default: 0,
+    },
+    roleStaffName: {
+      type: String,
+      default: 'Nhân viên',
     },
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    phone: {
+      type: Number,
+      required: true,
+      default: null,
+    },
+    typeOfPersonnel: {
+      type: String,
+      required: true,
+      trim: true,
+      default: '',
+    },
+    typeOfContract: {
+      type: String,
+      required: true,
+      trim: true,
+      default: '',
+    },
+    cccd: {
+      type: Number,
+      required: true,
+      default: null,
+    },
+    status: {
+      type: Number,
+      default: 0,
+    },
+    statusName: {
+      type: String,
+      default: 'Tuyển dụng',
     },
   },
   { timestamps: true }
