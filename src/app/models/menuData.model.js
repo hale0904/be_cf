@@ -9,14 +9,14 @@ const menuDataSchema = new mongoose.Schema(
     order: { type: Number },
 
     // PHÂN CẤP MENU
-    parentId: {
+    parentCode: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'MenuData',
       default: null,
     },
 
     // GẮN VỚI FEATURE (CHA)
-    featureId: {
+    featureCode: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Feature',
       required: true,
