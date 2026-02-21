@@ -1,16 +1,9 @@
 const authService = require('./auth.service');
 
-// Handler register
-exports.registerAdmin = async (req, res) => {
+// Register
+exports.register = async (req, res) => {
   try {
-    const { code, userName, email, password, confirmPassword } = req.body;
-
-    if (!code || !userName || !email || !password || !confirmPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'Bắt buộc phải điền đầy đủ thông tin',
-      });
-    }
+    const { staffCode, email, password, roleCode, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
       return res.status(400).json({
@@ -19,16 +12,16 @@ exports.registerAdmin = async (req, res) => {
       });
     }
 
-    const admin = await authService.registerAdmin({
-      code,
-      userName,
+    await authService.register({
+      staffCode,
       email,
       password,
+      roleCode,
     });
+
     return res.status(201).json({
       success: true,
-      message: 'Admin registered successfully',
-      // adminId: admin._id,
+      message: 'User registered successfully',
     });
   } catch (err) {
     return res.status(400).json({
@@ -38,12 +31,12 @@ exports.registerAdmin = async (req, res) => {
   }
 };
 
-// Handler login
-exports.loginAdmin = async (req, res) => {
+// Login
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const { admin, accessToken, refreshToken } = await authService.loginAdmin({
+    const { user, accessToken, refreshToken } = await authService.login({
       email,
       password,
     });
@@ -52,9 +45,12 @@ exports.loginAdmin = async (req, res) => {
       success: true,
       message: 'Login successful',
       data: {
-        // id: admin._id,
-        email: admin.email,
-        role: admin.role,
+        id: user._id,
+        email: user.email,
+        role: {
+          code: user.roleCode.code,
+          name: user.roleCode.name,
+        },
       },
       accessToken,
       refreshToken,

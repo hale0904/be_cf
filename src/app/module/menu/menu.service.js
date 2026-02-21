@@ -83,7 +83,7 @@ exports.updateMenu = async (payload) => {
     path === undefined &&
     icon === undefined &&
     order === undefined &&
-    parentId === undefined &&
+    parentCode === undefined &&
     isActive === undefined
   ) {
     throw new Error('Không có dữ liệu để cập nhật');
@@ -93,7 +93,7 @@ exports.updateMenu = async (payload) => {
   if (path !== undefined) menu.path = path;
   if (icon !== undefined) menu.icon = icon;
   if (order !== undefined) menu.order = order;
-  if (parentId !== undefined) menu.parentId = parentId;
+  if (parentCode !== undefined) menu.parentCode = parentCode;
   if (isActive !== undefined) menu.isActive = isActive;
 
   await menu.save();

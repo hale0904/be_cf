@@ -1,54 +1,74 @@
-const Admin = require('../../models/staff.model');
-const { hashPassword, comparePassword } = require('../../utils/hash.util');
+const User = require('../../models/user.model');
+const Staff = require('../../models/staff.model');
+const Role = require('../../models/role.model');
 
+const { hashPassword, comparePassword } = require('../../utils/hash.util');
 const {
   generateAccessToken,
   generateRefreshToken,
 } = require('../../utils/token.util');
 
-exports.registerAdmin = async ({ code, userName, email, password }) => {
-  const existingAdmin = await Admin.findOne({ email });
-  if (existingAdmin) {
-    throw new Error('Admin already exists');
-  }
+// REGISTER USER cho STAFF có sẵn
+exports.register = async ({ staffCode, email, password, roleCode }) => {
+  // 1. Tìm staff theo code
+  const staff = await Staff.findOne({ code: staffCode });
+  if (!staff) throw new Error('Staff not found');
 
+  // 2. Check staff đã có user chưa
+  if (staff.userCode) throw new Error('Staff already has an account');
+
+  // 3. Check email ở User
+  const existingUser = await User.findOne({ email });
+  if (existingUser) throw new Error('Email already exists');
+
+  // 4. Lấy role (role đã được tạo sẵn)
+  const role = await Role.findOne({ code: roleCode || 'STAFF' });
+  if (!role) throw new Error('Role not found');
+
+  // 5. Hash password
   const hashedPassword = await hashPassword(password);
 
-  const admin = await Admin.create({
-    code,
-    userName,
+  // 6. Tạo User
+  const user = await User.create({
     email,
     password: hashedPassword,
-    createdAt: new Date(),
+    roleCode: role._id, // ObjectId
+    status: 1,
+    staffCode: staff._id, // ObjectId
   });
 
-  return admin;
+  // 7. Gán userId cho staff
+  staff.userCode = user._id;
+  await staff.save();
+
+  return user;
 };
 
-exports.loginAdmin = async ({ email, password }) => {
-  const admin = await Admin.findOne({ email });
-  if (!admin) {
+// LOGIN
+exports.login = async ({ email, password }) => {
+  const user = await User.findOne({ email }).populate('roleCode');
+  if (!user) {
     throw new Error('Invalid email or password');
   }
 
-  const isMatch = await comparePassword(password, admin.password);
+  const isMatch = await comparePassword(password, user.password);
   if (!isMatch) {
     throw new Error('Invalid email or password');
   }
 
   const payload = {
-    id: admin._id,
-    role: admin.role,
+    userId: user._id,
+    roleId: user.roleCode,
   };
 
   const accessToken = generateAccessToken(payload);
   const refreshToken = generateRefreshToken(payload);
 
-  admin.refreshToken = refreshToken;
-  await admin.save();
+  user.refreshToken = refreshToken;
+  await user.save();
 
   return {
-    admin,
+    user,
     accessToken,
     refreshToken,
   };

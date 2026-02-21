@@ -23,11 +23,6 @@ const staffSchema = new mongoose.Schema(
       required: true,
       default: '',
     },
-    password: {
-      type: String,
-      required: true,
-      default: '',
-    },
     dateOfBirth: {
       type: Date,
       required: true,
@@ -81,24 +76,7 @@ const staffSchema = new mongoose.Schema(
       type: String,
       default: 'Tuyển dụng',
     },
-    permissions: {
-      features: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Feature',
-        },
-      ],
-      menus: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'MenuData',
-        },
-      ],
-      canEdit: {
-        type: Boolean,
-        default: false, // có được sửa không
-      },
-    },
+    userCode: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true }
 );
