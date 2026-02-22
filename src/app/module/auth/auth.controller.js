@@ -51,9 +51,9 @@ exports.login = async (req, res) => {
           code: user.roleCode.code,
           name: user.roleCode.name,
         },
+        accessToken,
+        refreshToken,
       },
-      accessToken,
-      refreshToken,
     });
   } catch (err) {
     return res.status(401).json({
