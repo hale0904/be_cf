@@ -14,5 +14,6 @@ router.post(
   controller.register
 );
 router.post('/login', controller.login);
+router.post('/logout', authMiddleware, controller.logout);
 
 module.exports = router;
