@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 const Permission = require('../models/permission.model');
-const Menu = require('../models/menu.model');
+const Menu = require('../models/menuData.model');
 const Feature = require('../models/feature.model');
 
 // 1. AUTH: xác thực user
