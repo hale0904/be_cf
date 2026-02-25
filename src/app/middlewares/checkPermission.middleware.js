@@ -6,9 +6,18 @@ exports.checkPermission = (permissionCode) => {
       return res.status(403).json({ message: 'No role assigned' });
     }
 
-    const permissions = user.roleCode.permissions || [];
+    const role = user.roleCode; // đã populate
+    console.log('ROLE:', req.user.roleCode);
 
-    const hasPermission = permissions.some((p) => p.code === permissionCode);
+    if (!role.permissions || role.permissions.length === 0) {
+      return res.status(403).json({ message: 'No permissions found' });
+    }
+
+    const hasPermission = role.permissions.some(
+      (p) => p.code === permissionCode
+    );
+
+    console.log('HAS PERMISSION:', hasPermission);
 
     if (!hasPermission) {
       return res.status(403).json({

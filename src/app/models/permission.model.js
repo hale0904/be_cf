@@ -4,8 +4,8 @@ const permissionSchema = new mongoose.Schema({
   code: { type: String, unique: true }, // STAFF_VIEW
   name: String,
 
-  featureId: { type: mongoose.Schema.Types.ObjectId, ref: 'Feature' },
-  menuId: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuData' },
+  featureId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Feature' }],
+  menuId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MenuData' }],
 
   action: {
     type: String,

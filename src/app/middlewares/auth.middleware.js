@@ -1,6 +1,10 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
+const Permission = require('../models/permission.model');
+const Menu = require('../models/menu.model');
+const Feature = require('../models/feature.model');
 
+// 1. AUTH: xác thực user
 exports.authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -14,9 +18,7 @@ exports.authMiddleware = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-    // decoded = { userId, roleId, iat, exp }
 
-    // Lấy user + role + permissions
     const user = await User.findById(decoded.userId).populate({
       path: 'roleCode',
       populate: {
@@ -28,11 +30,12 @@ exports.authMiddleware = async (req, res, next) => {
       return res.status(401).json({ message: 'User not found' });
     }
 
-    req.user = user; // gắn vào request
+    req.user = user; // gắn user vào request
     next();
   } catch (err) {
-    return res
-      .status(401)
-      .json({ message: 'Unauthorized', error: err.message });
+    return res.status(401).json({
+      message: 'Unauthorized',
+      error: err.message,
+    });
   }
 };
