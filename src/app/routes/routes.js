@@ -5,6 +5,7 @@ const hrRoutes = require('../module/hr/hr.route');
 const featureRoutes = require('../module/feature/feature.route');
 const menuDataRoutes = require('../module/menu/menu.route');
 const accountRoutes = require('../module/accountUser/accountUser.route');
+const category = require('../module/products/category/category.route');
 const { authMiddleware } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.use('/api', authMiddleware, [
   featureRoutes,
   menuDataRoutes,
   accountRoutes,
+  category,
 ]);
 
 module.exports = router;
