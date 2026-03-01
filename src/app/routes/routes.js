@@ -4,7 +4,7 @@ const authRoutes = require('../module/auth/auth.route');
 const hrRoutes = require('../module/hr/hr.route');
 const featureRoutes = require('../module/feature/feature.route');
 const menuDataRoutes = require('../module/menu/menu.route');
-
+const accountRoutes = require('../module/accountUser/accountUser.route');
 const { authMiddleware } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
@@ -13,6 +13,11 @@ const router = express.Router();
 router.use('/api/auth', authRoutes);
 
 // Protected
-router.use('/api', authMiddleware, [hrRoutes, featureRoutes, menuDataRoutes]);
+router.use('/api', authMiddleware, [
+  hrRoutes,
+  featureRoutes,
+  menuDataRoutes,
+  accountRoutes,
+]);
 
 module.exports = router;
