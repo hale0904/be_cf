@@ -5,13 +5,16 @@ const hrRoutes = require('../module/hr/hr.route');
 const featureRoutes = require('../module/feature/feature.route');
 const menuDataRoutes = require('../module/menu/menu.route');
 const accountRoutes = require('../module/accountUser/accountUser.route');
-const category = require('../module/products/category/category.route');
+const categoryRoutes = require('../module/products/category/category.route');
+const productRoutes = require('../module/products/product/product.route');
+const uploadRoute = require('../../uploads/upload.route');
 const { authMiddleware } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
 // Public
 router.use('/api/auth', authRoutes);
+router.use('/api', uploadRoute);
 
 // Protected
 router.use('/api', authMiddleware, [
@@ -19,7 +22,8 @@ router.use('/api', authMiddleware, [
   featureRoutes,
   menuDataRoutes,
   accountRoutes,
-  category,
+  categoryRoutes,
+  productRoutes,
 ]);
 
 module.exports = router;
