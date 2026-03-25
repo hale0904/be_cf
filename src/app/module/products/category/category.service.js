@@ -10,13 +10,13 @@ const STATUS_CATEGORY = {
 exports.getListCategory = async (status = [], keyword) => {
   const filter = {};
 
-  // filter theo status (dropdown)
-  if (status !== undefined && status !== null && status !== '') {
-    if (Array.isArray(status)) {
-      filter.status = { $in: status };
-    } else {
-      filter.status = status;
-    }
+  // filter theo status
+  if (
+    Array.isArray(status)
+      ? status.length
+      : status !== undefined && status !== null && status !== ''
+  ) {
+    filter.status = Array.isArray(status) ? { $in: status } : status;
   }
 
   // search theo name + location
