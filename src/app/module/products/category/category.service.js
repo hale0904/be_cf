@@ -1,4 +1,5 @@
-const Category = require('../../../models/category.model');
+const categoryModel = require('../../../models/category.model');
+const productModel = require('../../../models/product.model');
 
 const STATUS_CATEGORY = {
   0: 'Đang chỉnh sửa',
@@ -6,24 +7,28 @@ const STATUS_CATEGORY = {
   2: 'Ngưng hoạt động',
 };
 
-exports.getListCategory = async (status, keyword) => {
+exports.getListCategory = async (status = [], keyword) => {
   const filter = {};
 
   // filter theo status (dropdown)
   if (status !== undefined && status !== null && status !== '') {
-    filter.status = Number(status);
+    if (Array.isArray(status)) {
+      filter.status = { $in: status };
+    } else {
+      filter.status = status;
+    }
   }
 
   // search theo name + location
   if (keyword && keyword.trim() !== '') {
     const regex = new RegExp(keyword.trim(), 'i'); // không phân biệt hoa thường
 
-    filter.$or = [{ name: regex }, { location: regex }];
+    filter.$or = [{ name: regex }, { code: regex }];
   }
 
-  const category = await Category.find(filter).select(
-    'code name description status statusName createdAt'
-  );
+  const category = await categoryModel
+    .find(filter)
+    .select('code name description status statusName createdAt');
 
   return category;
 };
@@ -33,9 +38,9 @@ exports.getCategoryDetail = async (code) => {
     throw new Error('Mã loại không hợp lệ');
   }
 
-  const category = await Category.findOne({ code }).select(
-    'code name description status statusName createdAt'
-  );
+  const category = await categoryModel
+    .findOne({ code })
+    .select('code name description status statusName createdAt');
 
   if (!category) {
     throw new Error('Loại không tồn tại');
@@ -56,13 +61,13 @@ exports.updateCategory = async (payload) => {
       throw new Error('Thiếu thông tin loại');
     }
 
-    const count = await Category.countDocuments();
+    const count = await categoryModel.countDocuments();
     const newCode = `C${String(count + 1).padStart(3, '0')}`;
 
     const finalStatus =
       status !== undefined && status !== null ? Number(status) : 0;
 
-    const category = await Category.create({
+    const category = await categoryModel.create({
       code: newCode,
       name,
       description,
@@ -76,7 +81,7 @@ exports.updateCategory = async (payload) => {
   // ======================
   // UPDATE
   // ======================
-  const categoryUpdate = await Category.findOne({ code });
+  const categoryUpdate = await categoryModel.findOne({ code });
   if (!categoryUpdate) throw new Error('Loại không tồn tại');
 
   if (name === undefined && description === undefined && status === undefined) {
@@ -95,4 +100,75 @@ exports.updateCategory = async (payload) => {
   await categoryUpdate.save();
 
   return { isCreate: false, data: categoryUpdate };
+};
+
+exports.deleteCategory = async (items = []) => {
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error('Danh sách danh mục không hợp lệ');
+  }
+
+  const codes = items
+    .map((item) => item.code)
+    .filter((code) => typeof code === 'string' && code.trim() !== '');
+
+  if (codes.length === 0) {
+    throw new Error('Không tìm thấy mã danh mục hợp lệ');
+  }
+
+  // lấy category
+  const categorys = await categoryModel.find({
+    code: { $in: codes },
+  });
+
+  if (categorys.length === 0) {
+    throw new Error('Danh mục không tồn tại');
+  }
+
+  // check thiếu code
+  if (categorys.length !== codes.length) {
+    const foundCodes = categorys.map((c) => c.code);
+    const missingCodes = codes.filter((c) => !foundCodes.includes(c));
+
+    throw new Error(`Danh mục không tồn tại: ${missingCodes.join(', ')}`);
+  }
+
+  // check status
+  const invalidCate = categorys.filter((c) => c.status !== 0);
+  if (invalidCate.length > 0) {
+    throw new Error(
+      `Chỉ xoá được danh mục "Đang chỉnh sửa". Mã: ${invalidCate
+        .map((c) => c.code)
+        .join(', ')}`
+    );
+  }
+
+  const categoryIds = categorys.map((c) => c._id);
+
+  // dùng distinct (tối ưu hơn find)
+  const usedCategoryIds = await productModel.distinct('categoryCode', {
+    categoryCode: { $in: categoryIds },
+  });
+
+  if (usedCategoryIds.length > 0) {
+    const mapIdToCode = new Map(
+      categorys.map((c) => [c._id.toString(), c.code])
+    );
+
+    const usedCategoryCodes = usedCategoryIds.map((id) =>
+      mapIdToCode.get(id.toString())
+    );
+
+    throw new Error(
+      `Không thể xoá danh mục đang chứa sản phẩm. Mã: ${usedCategoryCodes.join(', ')}`
+    );
+  }
+
+  // delete bằng _id (chuẩn nhất)
+  const result = await categoryModel.deleteMany({
+    _id: { $in: categoryIds },
+  });
+
+  return {
+    deletedCount: result.deletedCount,
+  };
 };

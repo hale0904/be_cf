@@ -16,4 +16,11 @@ router.post(
   controller.updateCategory
 );
 
+router.post(
+  '/deleteCategory',
+  authMiddleware,
+  checkPermission('HR_DELETE', 'ADMIN_DELETE'),
+  controller.deleteCategory
+);
+
 module.exports = router;
