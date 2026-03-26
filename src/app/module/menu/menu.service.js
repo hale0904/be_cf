@@ -1,38 +1,116 @@
 const Feature = require('../../models/feature.model');
 const Menu = require('../../models/menuData.model');
+const User = require('../../models/user.model');
 
-exports.getListMenu = async () => {
-  const features = await Feature.find({ isActive: true });
+exports.getListMenuByUser = async (userId) => {
+  // 1. Lấy user + role + permission
+  const user = await User.findById(userId).populate({
+    path: 'roleCode',
+    populate: {
+      path: 'permissions',
+      populate: {
+        path: 'menuId',
+      },
+    },
+  });
+
+  if (!user) {
+    throw new Error('User không tồn tại');
+  }
+
+  const role = user.roleCode;
+
+  // 2. Nếu là ADMIN → lấy tất cả
+  if (role.code === 'ADMIN') {
+    return await getAllMenu();
+  }
+
+  // 3. Lọc permission view
+  const viewPermissions = role.permissions.filter((p) => p.action === 'edit');
+  console.log(viewPermissions);
+  // 4. Lấy danh sách menu được phép
+  const allowedMenuIds = new Set();
+
+  viewPermissions.forEach((p) => {
+    if (Array.isArray(p.menuId)) {
+      p.menuId.forEach((m) => {
+        if (m && m._id) {
+          allowedMenuIds.add(m._id.toString());
+        }
+      });
+    }
+  });
+
+  // 5. Query menu
+  const menus = await Menu.find({
+    _id: { $in: Array.from(allowedMenuIds) },
+    isActive: true,
+  }).lean();
+
+  // 6. Lấy feature tương ứng
+  const featureIds = [...new Set(menus.map((m) => m.featureCode.toString()))];
+
+  const features = await Feature.find({
+    _id: { $in: featureIds },
+    isActive: true,
+  }).lean();
+
+  // 7. Build result
+  const result = features.map((f) => {
+    const featureMenus = menus.filter(
+      (m) => m.featureCode.toString() === f._id.toString()
+    );
+
+    return {
+      code: f.code,
+      name: f.name,
+      isActive: f.isActive,
+      menu: buildMenuTree(featureMenus),
+    };
+  });
+
+  return result;
+};
+
+const buildMenuTree = (menus, parentCode = null) => {
+  return menus
+    .filter((m) => m.parentCode === parentCode)
+    .sort((a, b) => (a.order || 0) - (b.order || 0))
+    .map((m) => ({
+      code: m.code,
+      name: m.name,
+      path: m.path,
+      icon: m.icon,
+      order: m.order,
+      parentCode: m.parentCode,
+      featureCode: m.featureCode,
+      isActive: m.isActive,
+      children: buildMenuTree(menus, m.code),
+    }));
+};
+
+const getAllMenu = async () => {
+  const features = await Feature.find({ isActive: true }).lean();
 
   const featureIds = features.map((f) => f._id);
 
   const menus = await Menu.find({
     featureCode: { $in: featureIds },
     isActive: true,
-  });
+  }).lean();
 
-  const result = features.map((f) => {
+  return features.map((f) => {
     const featureMenus = menus.filter(
       (m) => m.featureCode.toString() === f._id.toString()
     );
+
     return {
       code: f.code,
       name: f.name,
       isActive: f.isActive,
-      menu: featureMenus.map((m) => ({
-        code: m.code,
-        name: m.name,
-        path: m.path,
-        icon: m.icon,
-        order: m.order,
-        parentCode: m.parentCode,
-        featureCode: m.featureCode,
-        isActive: m.isActive,
-      })),
+      menu: buildMenuTree(featureMenus),
     };
   });
-
-  return result;
 };
 
 exports.updateMenu = async (payload) => {

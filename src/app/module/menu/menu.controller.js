@@ -1,17 +1,19 @@
 const menuService = require('./menu.service');
 
-exports.getListMenu = async (req, res) => {
+exports.getMyMenu = async (req, res) => {
   try {
-    const data = await menuService.getListMenu();
-    return res.status(200).json({
+    const userId = req.user._id; // lấy từ middleware auth
+
+    const data = await menuService.getListMenuByUser(userId);
+
+    res.json({
       success: true,
       data,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: 'Server error',
+      message: error.message,
     });
   }
 };

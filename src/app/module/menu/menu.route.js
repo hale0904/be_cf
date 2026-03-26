@@ -7,7 +7,7 @@ const {
 const router = express.Router();
 
 // routes
-router.post('/getListMenu', authMiddleware, controller.getListMenu);
+router.post('/getMyMenu', authMiddleware, controller.getMyMenu);
 router.post(
   '/updateMenu',
   authMiddleware,
