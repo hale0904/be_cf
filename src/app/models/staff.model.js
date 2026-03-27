@@ -34,13 +34,18 @@ const staffSchema = new mongoose.Schema(
       required: true,
       default: '',
     },
-    roleStaff: {
-      type: Number,
-      default: 0,
-    },
-    roleStaffName: {
-      type: String,
-      default: 'Nhân viên',
+    // roleStaff: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // roleStaffName: {
+    //   type: String,
+    //   default: 'Nhân viên',
+    // },
+    typeOfPosition: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'TypeHr',
+      required: true,
     },
     createdAt: {
       type: Date,
@@ -51,17 +56,15 @@ const staffSchema = new mongoose.Schema(
       required: true,
       default: null,
     },
-    typeOfPersonnel: {
-      type: String,
+    typeOfPersonnelCode: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'TypeHr',
       required: true,
-      trim: true,
-      default: '',
     },
     typeOfContract: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'TypeHr',
       required: true,
-      trim: true,
-      default: '',
     },
     cccd: {
       type: Number,
