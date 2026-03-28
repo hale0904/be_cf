@@ -91,12 +91,12 @@ exports.updateTypeHr = async (payload) => {
     throw new Error('Không có dữ liệu để cập nhật');
   }
 
-  if (name !== undefined) typeHrModel.name = name;
+  if (name !== undefined) typeHrUpdate.name = name;
 
   if (status !== undefined && status !== null) {
     const newStatus = Number(status);
-    typeHrModel.status = newStatus;
-    typeHrModel.statusName = STATUS_TYPEHR[newStatus];
+    typeHrUpdate.status = newStatus;
+    typeHrUpdate.statusName = STATUS_TYPEHR[newStatus];
   }
 
   await typeHrUpdate.save();
