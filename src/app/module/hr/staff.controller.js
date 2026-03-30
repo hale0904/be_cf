@@ -19,8 +19,8 @@ exports.getListStaff = async (req, res) => {
   }
 };
 
-// Get parking detail by code
-exports.getHrDetail = async (req, res) => {
+// Get staff detail by code
+exports.getStaffDetail = async (req, res) => {
   try {
     const { code } = req.body;
     const data = await hrService.getStaffDetail(code);
