@@ -1,7 +1,7 @@
 const express = require('express');
 
 const authRoutes = require('../module/auth/auth.route');
-const hrRoutes = require('../module/hr/hr.route');
+const hrRoutes = require('../module/hr/staff.route');
 const featureRoutes = require('../module/feature/feature.route');
 const menuDataRoutes = require('../module/menu/menu.route');
 const accountRoutes = require('../module/accountUser/accountUser.route');
