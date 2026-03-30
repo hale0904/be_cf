@@ -56,7 +56,7 @@ const staffSchema = new mongoose.Schema(
       required: true,
       default: null,
     },
-    typeOfPersonnelCode: {
+    typeOfPersonnel: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'TypeHr',
       required: true,
