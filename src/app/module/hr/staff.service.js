@@ -7,19 +7,22 @@ const STATUS_HR = {
   2: 'Ngưng làm việc',
 };
 
-exports.getListStaff = async (status, keyword) => {
+exports.getListStaff = async (status = [], keyword) => {
   const filter = {};
 
-  // filter theo status (dropdown)
-  if (status !== undefined && status !== null && status !== '') {
-    filter.status = Number(status);
+  if (
+    Array.isArray(status)
+      ? status.length
+      : status !== undefined && status !== null && status !== ''
+  ) {
+    filter.status = Array.isArray(status) ? { $in: status } : status;
   }
 
   // search theo name + location
   if (keyword && keyword.trim() !== '') {
     const regex = new RegExp(keyword.trim(), 'i'); // không phân biệt hoa thường
 
-    filter.$or = [{ name: regex }, { location: regex }];
+    filter.$or = [{ userName: regex }, { code: regex }];
   }
 
   const hr = await Staff.find(filter).select(
