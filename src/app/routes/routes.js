@@ -11,6 +11,7 @@ const uploadRoute = require('../../uploads/upload.route');
 const { authMiddleware } = require('../middlewares/auth.middleware');
 const typeHrRoute = require('../module/typeHr/typeHr.route');
 const accountStaffRoute = require('../module/hr/accountStaff/accountStaff.route');
+const roleRoute = require('../module/hr/role/role.route');
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.use('/api', authMiddleware, [
   productRoutes,
   typeHrRoute,
   accountStaffRoute,
+  roleRoute,
 ]);
 
 module.exports = router;
