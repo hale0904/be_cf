@@ -5,9 +5,9 @@ const roleModel = require('../../../models/role.model');
 const { hashPassword } = require('../../../utils/hash.util');
 
 const STATUS_ACCOUNTSTAFF = {
-  0: 'Tuyển dụng',
-  1: 'Đang làm việc',
-  2: 'Ngưng làm việc',
+  0: 'Đang chỉnh sửa',
+  1: 'Hoạt động',
+  2: 'Ngưng hoạt động',
 };
 
 exports.getListAccountStaff = async (status = [], keyword) => {
@@ -30,7 +30,7 @@ exports.getListAccountStaff = async (status = [], keyword) => {
 
   const accountStaffs = await userModel
     .find(filter)
-    .select('code email staffCode roleCode')
+    .select('code email staffCode roleCode status statusName createdAt')
     .populate(
       'staffCode',
       'code email userName dateOfBirth loactionName status statusName createdAt phone typeOfPosition typeOfPersonnel typeOfContract cccd'
