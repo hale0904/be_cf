@@ -69,9 +69,17 @@ exports.getListMenuByUser = async (userId) => {
   return result;
 };
 
-const buildMenuTree = (menus, parentCode = null) => {
+const buildMenuTree = (menus, parentId = null) => {
   return menus
-    .filter((m) => m.parentCode === parentCode)
+    .filter((m) => {
+      // menu gốc
+      if (parentId === null) {
+        return !m.parentCode;
+      }
+
+      // menu con
+      return m.parentCode && m.parentCode.toString() === parentId.toString();
+    })
     .sort((a, b) => (a.order || 0) - (b.order || 0))
     .map((m) => ({
       code: m.code,
@@ -82,7 +90,9 @@ const buildMenuTree = (menus, parentCode = null) => {
       parentCode: m.parentCode,
       featureCode: m.featureCode,
       isActive: m.isActive,
-      children: buildMenuTree(menus, m.code),
+
+      // truyền _id của menu hiện tại xuống để tìm con
+      children: buildMenuTree(menus, m._id),
     }));
 };
 
