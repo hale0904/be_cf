@@ -1,4 +1,4 @@
-const roleService = require('./route.service');
+const roleService = require('./role.service');
 
 // Get list roles with filter and search
 exports.getListRoles = async (req, res) => {

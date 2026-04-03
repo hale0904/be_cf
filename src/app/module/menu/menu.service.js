@@ -20,13 +20,10 @@ exports.getListMenuByUser = async (userId) => {
 
   const role = user.roleCode;
 
-  // 2. Nếu là ADMIN → lấy tất cả
-  if (role.code === 'ADMIN') {
-    return await getAllMenu();
-  }
-
   // 3. Lọc permission view
-  const viewPermissions = role.permissions.filter((p) => p.action === 'edit');
+  const viewPermissions = role.permissions.filter(
+    (p) => p.action === 'update' || p.action === 'view'
+  );
   console.log(viewPermissions);
   // 4. Lấy danh sách menu được phép
   const allowedMenuIds = new Set();
@@ -87,30 +84,6 @@ const buildMenuTree = (menus, parentCode = null) => {
       isActive: m.isActive,
       children: buildMenuTree(menus, m.code),
     }));
-};
-
-const getAllMenu = async () => {
-  const features = await Feature.find({ isActive: true }).lean();
-
-  const featureIds = features.map((f) => f._id);
-
-  const menus = await Menu.find({
-    featureCode: { $in: featureIds },
-    isActive: true,
-  }).lean();
-
-  return features.map((f) => {
-    const featureMenus = menus.filter(
-      (m) => m.featureCode.toString() === f._id.toString()
-    );
-
-    return {
-      code: f.code,
-      name: f.name,
-      isActive: f.isActive,
-      menu: buildMenuTree(featureMenus),
-    };
-  });
 };
 
 exports.updateMenu = async (payload) => {

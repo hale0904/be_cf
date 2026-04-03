@@ -8,11 +8,13 @@ const router = express.Router();
 
 // routes
 router.post('/getMyMenu', authMiddleware, controller.getMyMenu);
-router.post(
-  '/updateMenu',
-  authMiddleware,
-  checkPermission('ADMIN_UPDATE'),
-  controller.updateMenu
-);
+// router.post('/getList', authMiddleware, controller.getMyMenu);
+
+// router.post(
+//   '/updateMenu',
+//   authMiddleware,
+//   // checkPermission('ADMIN_UPDATE'),
+//   controller.updateMenu
+// );
 
 module.exports = router;

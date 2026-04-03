@@ -9,7 +9,7 @@ const permissionSchema = new mongoose.Schema({
 
   action: {
     type: String,
-    enum: ['view', 'create', 'edit', 'delete', 'export'],
+    enum: ['view', 'update'],
   },
 });
 
