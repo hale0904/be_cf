@@ -109,32 +109,57 @@ exports.getListAllMenu = async (keyword) => {
 
   const menus = await menuDataModel
     .find(filter)
-    .populate('featureCode', 'code name')
+    .populate('featureCode', 'code name isActive')
+    .sort({ order: 1, createdAt: 1 })
     .lean();
 
-  const map = {};
-  const roots = [];
+  const featureMap = {};
 
   menus.forEach((menu) => {
-    map[menu._id] = {
+    const featureId = menu.featureCode._id.toString();
+
+    if (!featureMap[featureId]) {
+      featureMap[featureId] = {
+        code: menu.featureCode.code,
+        name: menu.featureCode.name,
+        isActive: menu.featureCode.isActive,
+        menu: [],
+      };
+    }
+
+    featureMap[featureId].menu.push({
       ...menu,
       children: [],
+    });
+  });
+
+  const result = Object.values(featureMap).map((feature) => {
+    const map = {};
+    const roots = [];
+
+    feature.menu.forEach((menu) => {
+      map[menu._id.toString()] = menu;
+    });
+
+    feature.menu.forEach((menu) => {
+      if (menu.parentCode) {
+        const parentId = menu.parentCode.toString();
+
+        if (map[parentId]) {
+          map[parentId].children.push(menu);
+        }
+      } else {
+        roots.push(menu);
+      }
+    });
+
+    return {
+      ...feature,
+      menu: roots,
     };
   });
 
-  menus.forEach((menu) => {
-    if (menu.parentCode) {
-      const parentId = menu.parentCode.toString();
-
-      if (map[parentId]) {
-        map[parentId].children.push(map[menu._id]);
-      }
-    } else {
-      roots.push(map[menu._id]);
-    }
-  });
-
-  return roots;
+  return result;
 };
 
 exports.updateMenu = async (payload) => {
