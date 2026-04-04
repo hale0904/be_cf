@@ -18,6 +18,23 @@ exports.getMyMenu = async (req, res) => {
   }
 };
 
+exports.getListAllMenu = async (req, res) => {
+  try {
+    const { keyword } = req.body;
+
+    const data = await menuService.getListAllMenu(keyword);
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 // Create or Update menu
 exports.updateMenu = async (req, res) => {
   try {

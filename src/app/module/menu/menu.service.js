@@ -1,4 +1,5 @@
 const Feature = require('../../models/feature.model');
+const menuDataModel = require('../../models/menuData.model');
 const Menu = require('../../models/menuData.model');
 const User = require('../../models/user.model');
 
@@ -94,6 +95,46 @@ const buildMenuTree = (menus, parentId = null) => {
       // truyền _id của menu hiện tại xuống để tìm con
       children: buildMenuTree(menus, m._id),
     }));
+};
+
+exports.getListAllMenu = async (keyword) => {
+  const filter = {};
+
+  if (keyword) {
+    filter.$or = [
+      { name: { $regex: keyword, $options: 'i' } },
+      { code: { $regex: keyword, $options: 'i' } },
+    ];
+  }
+
+  const menus = await menuDataModel
+    .find(filter)
+    .populate('featureCode', 'code name')
+    .lean();
+
+  const map = {};
+  const roots = [];
+
+  menus.forEach((menu) => {
+    map[menu._id] = {
+      ...menu,
+      children: [],
+    };
+  });
+
+  menus.forEach((menu) => {
+    if (menu.parentCode) {
+      const parentId = menu.parentCode.toString();
+
+      if (map[parentId]) {
+        map[parentId].children.push(map[menu._id]);
+      }
+    } else {
+      roots.push(map[menu._id]);
+    }
+  });
+
+  return roots;
 };
 
 exports.updateMenu = async (payload) => {

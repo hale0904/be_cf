@@ -8,6 +8,7 @@ const router = express.Router();
 
 // routes
 router.post('/getMyMenu', authMiddleware, controller.getMyMenu);
+router.post('/getListAllMenu', authMiddleware, controller.getListAllMenu);
 // router.post('/getList', authMiddleware, controller.getMyMenu);
 
 // router.post(
