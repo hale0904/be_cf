@@ -2,41 +2,34 @@ const permissionModel = require('../../models/permission.model');
 const roleModel = require('../../models/role.model');
 const menuModel = require('../../models/menuData.model');
 
-exports.getListPermissions = async (roleId, status = [], keyword) => {
-  const filter = {};
+exports.getListPermissions = async (code, keyword) => {
+  if (!code) throw new Error('Mã role là bắt buộc');
 
-  if (
-    Array.isArray(status)
-      ? status.length
-      : status !== undefined && status !== null && status !== ''
-  ) {
-    filter.status = Array.isArray(status) ? { $in: status } : status;
-  }
+  // Lấy role theo code
+  const role = await roleModel
+    .findOne({ code: code })
+    .populate({
+      path: 'permissions',
+      select: 'code name action featureId menuId',
+      populate: [
+        { path: 'featureId', select: 'code name' },
+        { path: 'menuId', select: 'code name' },
+      ],
+    })
+    .lean();
+
+  if (!role) throw new Error('Role không tồn tại');
+
+  let permissions = role.permissions;
 
   if (keyword && keyword.trim() !== '') {
     const regex = new RegExp(keyword.trim(), 'i');
-
-    filter.$or = [{ email: regex }, { code: regex }, { name: regex }];
+    permissions = permissions.filter(
+      (p) => regex.test(p.code) || regex.test(p.name)
+    );
   }
 
-  const permissions = await permissionModel
-    .find(filter)
-    .select('code name action featureId menuId')
-    .populate('featureId', 'code name')
-    .populate('menuId', 'code name')
-    .lean();
-
-  const role = await roleModel.findById(roleId).select('permissions').lean();
-
-  const selectedPermissionIds =
-    role?.permissions?.map((id) => id.toString()) || [];
-
-  const result = permissions.map((permission) => ({
-    ...permission,
-    checked: selectedPermissionIds.includes(permission._id.toString()),
-  }));
-
-  return result;
+  return permissions;
 };
 
 exports.updatePermissionMenus = async (permissionId, menuIds) => {

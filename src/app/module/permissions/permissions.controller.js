@@ -3,9 +3,9 @@ const permissionService = require('./permissions.service');
 // Get list permissions with filter and search
 exports.getListPermissions = async (req, res) => {
   try {
-    const { status, keyword } = req.body;
+    const { code, keyword } = req.body;
 
-    const data = await permissionService.getListPermissions(status, keyword);
+    const data = await permissionService.getListPermissions(code, keyword);
     return res.status(200).json({
       success: true,
       data,
