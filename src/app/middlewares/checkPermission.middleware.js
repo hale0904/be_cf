@@ -29,7 +29,7 @@
 //   };
 // };
 
-exports.checkPermission = (permissionCode) => {
+exports.checkPermission = (...permissionCodes) => {
   return (req, res, next) => {
     const user = req.user;
 
@@ -49,14 +49,14 @@ exports.checkPermission = (permissionCode) => {
       return res.status(403).json({ message: 'No permissions found' });
     }
 
-    // check
+    // check OR logic: chỉ cần 1 trong các permissionCodes có trong user
     const hasPermission = permissions.some(
-      (p) => p && p.code === permissionCode
+      (p) => p && permissionCodes.includes(p.code)
     );
 
     if (!hasPermission) {
       return res.status(403).json({
-        message: `Forbidden: Missing permission ${permissionCode}`,
+        message: `Forbidden: Missing permission ${permissionCodes.join(' or ')}`,
       });
     }
 
