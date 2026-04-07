@@ -16,4 +16,11 @@ router.post(
   controller.updateProduct
 );
 
+router.post(
+  '/deleteProduct',
+  authMiddleware,
+  checkPermission('ADMIN_UPDATE', 'HR_UPDATE'),
+  controller.deleteProduct
+);
+
 module.exports = router;
