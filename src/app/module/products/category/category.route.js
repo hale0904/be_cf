@@ -8,6 +8,11 @@ const router = express.Router();
 
 // routes
 router.post('/getListCategory', authMiddleware, controller.getListCategory);
+router.post(
+  '/getListCateProduct',
+  authMiddleware,
+  controller.getListCateProduct
+);
 router.post('/getHrDetail', authMiddleware, controller.getHrDetail);
 router.post(
   '/updateCategory',

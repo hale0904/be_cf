@@ -27,7 +27,7 @@ exports.getListProduct = async (status = [], keyword) => {
     filter.$or = [{ name: regex }, { code: regex }];
   }
 
-  const products = await Product.find(filter).populate(
+  const products = await Product.find(filter).select(
     'code name price categoryCode image description status statusName createdAt'
   );
 

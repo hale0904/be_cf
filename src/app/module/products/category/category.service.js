@@ -33,6 +33,70 @@ exports.getListCategory = async (status = [], keyword) => {
   return category;
 };
 
+exports.getListCateProduct = async (code = [], keyword) => {
+  const categoryFilter = { status: 1 };
+
+  // filter theo code category
+  if (
+    Array.isArray(code)
+      ? code.length > 0
+      : code !== undefined && code !== null && code !== ''
+  ) {
+    categoryFilter.code = Array.isArray(code) ? { $in: code } : code;
+  }
+
+  const regex =
+    keyword && keyword.trim() !== '' ? new RegExp(keyword.trim(), 'i') : null;
+
+  // lấy category trước
+  const categories = await categoryModel
+    .find(categoryFilter)
+    .select('code name description status statusName createdAt')
+    .lean();
+
+  const categoryIds = categories.map((item) => item._id);
+
+  // filter product theo category + keyword
+  const productFilter = {
+    categoryCode: { $in: categoryIds },
+  };
+
+  if (regex) {
+    productFilter.$or = [{ name: regex }, { code: regex }];
+  }
+
+  const products = await productModel
+    .find(productFilter)
+    .select('code name price image categoryCode status')
+    .lean();
+
+  const result = categories
+    .map((cate) => {
+      const cateProducts = products.filter(
+        (product) => product.categoryCode.toString() === cate._id.toString()
+      );
+
+      // nếu có keyword:
+      // - hiện category nếu category match
+      // - hoặc category không match nhưng có product match
+      const isCategoryMatch = regex
+        ? regex.test(cate.name) || regex.test(cate.code)
+        : true;
+
+      if (regex && !isCategoryMatch && cateProducts.length === 0) {
+        return null;
+      }
+
+      return {
+        ...cate,
+        products: cateProducts,
+      };
+    })
+    .filter(Boolean);
+
+  return result;
+};
+
 exports.getCategoryDetail = async (code) => {
   if (!code || typeof code !== 'string') {
     throw new Error('Mã loại không hợp lệ');

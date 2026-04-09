@@ -19,6 +19,24 @@ exports.getListCategory = async (req, res) => {
   }
 };
 
+exports.getListCateProduct = async (req, res) => {
+  try {
+    const { code = [], keyword } = req.body;
+
+    const data = await categoryService.getListCateProduct(code, keyword);
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 // Get parking detail by code
 exports.getHrDetail = async (req, res) => {
   try {
