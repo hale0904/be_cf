@@ -44,7 +44,7 @@ exports.getProductDetail = async (code) => {
 
   const product = await Product.findOne({ code })
     .populate('categoryCode', 'code name')
-    .select(
+    .populate(
       'code name price categoryCode image description status statusName createdAt'
     );
 
@@ -75,8 +75,7 @@ exports.updateProduct = async (payload) => {
       throw new Error('Danh mục không tồn tại');
     }
 
-    const lastItem = await typeHrModel
-      .findOne({ code: { $regex: /^P\d+$/ } })
+    const lastItem = await Product.findOne({ code: { $regex: /^P\d+$/ } })
       .sort({ code: -1 }) // sắp xếp giảm dần
       .select('code');
 
