@@ -13,6 +13,7 @@ const typeHrRoute = require('../module/typeHr/typeHr.route');
 const accountStaffRoute = require('../module/hr/accountStaff/accountStaff.route');
 const roleRoute = require('../module/hr/role/role.route');
 const permissionsRoute = require('../module/permissions/permissions.route');
+const cartRoute = require('../module/sell/cart/cart.route');
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.use('/api', authMiddleware, [
   accountStaffRoute,
   roleRoute,
   permissionsRoute,
+  cartRoute,
 ]);
 
 module.exports = router;
