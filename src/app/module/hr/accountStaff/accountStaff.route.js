@@ -22,7 +22,7 @@ router.post(
 router.post(
   '/deleteAccountStaff',
   authMiddleware,
-  checkPermission('ADMIN_DELETE'),
+  checkPermission('ADMIN_UPDATE'),
   controller.deleteAccountStaff
 );
 

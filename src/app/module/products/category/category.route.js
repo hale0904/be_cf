@@ -24,7 +24,7 @@ router.post(
 router.post(
   '/deleteCategory',
   authMiddleware,
-  checkPermission('HR_DELETE', 'ADMIN_DELETE'),
+  checkPermission('ADMIN_UPDATE', 'HR_UPDATE'),
   controller.deleteCategory
 );
 

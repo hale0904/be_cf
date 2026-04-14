@@ -11,7 +11,7 @@ router.post('/getListFeature', authMiddleware, controller.getListFeature);
 router.post(
   '/updateFeature',
   authMiddleware,
-  checkPermission('ADMIN_CREATE'),
+  checkPermission('ADMIN_UPDATE'),
   controller.updateFeature
 );
 

@@ -12,13 +12,13 @@ router.post('/getStaffDetail', authMiddleware, controller.getStaffDetail);
 router.post(
   '/updateStaff',
   authMiddleware,
-  checkPermission('HR_UPDATE'),
+  checkPermission('ADMIN_UPDATE', 'HR_UPDATE'),
   controller.updateStaff
 );
 router.post(
   '/deleteStaff',
   authMiddleware,
-  checkPermission('HR_DELETE', 'ADMIN_DELETE'),
+  checkPermission('ADMIN_UPDATE', 'HR_DELETE'),
   controller.deleteStaff
 );
 

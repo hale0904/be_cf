@@ -12,14 +12,14 @@ router.post('/getListTypeHr', authMiddleware, typeHrController.getListTypeHr);
 router.post(
   '/updateTypeHr',
   authMiddleware,
-  checkPermission('ADMIN_UPDATE'),
+  checkPermission('ADMIN_UPDATE', 'HR_UPDATE'),
   typeHrController.updateTypeHr
 );
 
 router.post(
   '/deleteTypeHr',
   authMiddleware,
-  checkPermission('ADMIN_DELETE'),
+  checkPermission('ADMIN_UPDATE', 'HR_UPDATE'),
   typeHrController.deleteTypeHr
 );
 
